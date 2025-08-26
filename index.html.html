@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arquitectura Cliente/Servidor, Diseño Centrado en el Usuario e Investigación para Requisitos</title>
+  <meta name="description" content="Página educativa sobre la arquitectura Cliente/Servidor en el desarrollo web, el Diseño Centrado en el Usuario (DCU) y la importancia de la investigación contextual para el análisis de requisitos. Incluye referencias en formato APA 7." />
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121a2f;
+      --text: #eef2ff;
+      --muted: #b7c1e1;
+      --accent: #7aa2f7;
+      --accent-2: #9ece6a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+      --focus: 0 0 0 3px rgba(122,162,247,.45);
+    }
+    [data-theme="light"]{
+      --bg: #f7f9ff;
+      --panel: #ffffff;
+      --text: #0b1020;
+      --muted: #475071;
+      --accent: #1f6feb;
+      --accent-2: #0fa36b;
+      --shadow: 0 8px 24px rgba(16,24,40,.08);
+      --focus: 0 0 0 3px rgba(31,111,235,.25);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(122,162,247,.18), transparent),
+                  radial-gradient(1000px 500px at 110% 10%, rgba(159, 206, 106,.18), transparent), var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+    .skip-link { position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden; }
+    .skip-link:focus { left:16px; top:16px; width:auto; height:auto; padding:8px 12px; background: var(--panel); border-radius: 10px; box-shadow: var(--focus); }
+
+    header {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: saturate(1.3) blur(10px);
+      background: color-mix(in oklab, var(--bg) 90%, transparent);
+      border-bottom: 1px solid color-mix(in oklab, var(--panel), black 10%);
+    }
+    .nav { display:flex; align-items:center; gap:12px; padding:12px 24px; max-width: 1100px; margin: 0 auto; }
+    .brand { font-weight: 800; letter-spacing:.2px; }
+    .nav a.navlink { padding:8px 12px; border-radius: 999px; }
+    .nav a.navlink:hover { background: color-mix(in oklab, var(--panel), white 5%); text-decoration:none; }
+    .spacer { flex:1; }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius: 999px; border:1px solid color-mix(in oklab, var(--panel), white 10%); background: var(--panel); box-shadow: var(--shadow); }
+    .btn:focus-visible { outline:none; box-shadow: var(--focus); }
+
+    .hero { padding: 56px 0 24px; }
+    .hero .card { background: linear-gradient(180deg, color-mix(in oklab, var(--panel), white 3%), color-mix(in oklab, var(--panel), black 5%)); border:1px solid color-mix(in oklab, var(--panel), white 8%); border-radius: var(--radius); box-shadow: var(--shadow); padding: 28px; }
+    .title { font-size: clamp(26px, 4.5vw, 40px); margin: 0 0 8px; line-height:1.15; }
+    .subtitle { color: var(--muted); margin: 0 0 16px; }
+    .meta { display:flex; gap:12px; flex-wrap:wrap; color: var(--muted); font-size: 14px; }
+    .tag { padding:6px 10px; border:1px solid color-mix(in oklab, var(--panel), white 10%); border-radius:999px; }
+
+    main { display:grid; grid-template-columns: 1.2fr .8fr; gap: 24px; }
+    @media (max-width: 900px){ main { grid-template-columns: 1fr; } }
+
+    section { background: var(--panel); border:1px solid color-mix(in oklab, var(--panel), white 8%); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; }
+    section h2 { margin-top:0; font-size: clamp(20px, 2.8vw, 28px); }
+    section h3 { margin-top: 24px; font-size: 18px; }
+
+    .kpis { display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-top: 8px; }
+    .kpis .pill { padding:12px; border-radius: 14px; border:1px dashed color-mix(in oklab, var(--panel), white 12%); text-align:center; }
+    @media (max-width: 600px){ .kpis{ grid-template-columns: 1fr; } }
+
+    .accordion { border-top:1px solid color-mix(in oklab, var(--panel), white 8%); margin-top: 16px; }
+    .accordion details { border-bottom:1px solid color-mix(in oklab, var(--panel), white 8%); padding: 8px 0; }
+    .accordion summary { cursor:pointer; font-weight:600; }
+    .accordion summary:focus-visible { outline:none; box-shadow: var(--focus); border-radius: 8px; }
+
+    .callout { border-left: 4px solid var(--accent); background: color-mix(in oklab, var(--panel), white 6%); padding: 12px 14px; border-radius: 12px; }
+    .success { border-left-color: var(--accent-2); }
+
+    .ref-list { list-style: none; padding-left: 0; }
+    .ref-list li { margin-bottom: 10px; }
+    .ref { font-size: 14px; color: var(--muted); }
+
+    footer { color: var(--muted); text-align:center; padding: 28px 0; }
+  </style>
+</head>
+<body>
+  <a href="#contenido" class="skip-link">Saltar al contenido</a>
+  <header role="banner">
+    <nav class="nav" aria-label="Principal">
+      <div class="brand">Cliente/Servidor · DCU · Investigación</div>
+      <a class="navlink" href="#cliente-servidor">Cliente/Servidor</a>
+      <a class="navlink" href="#dcu">Diseño Centrado en el Usuario</a>
+      <a class="navlink" href="#investigacion">Investigación para Requisitos</a>
+      <a class="navlink" href="#referencias">Referencias (APA 7)</a>
+      <div class="spacer"></div>
+      <button id="themeBtn" class="btn" aria-pressed="false" aria-label="Cambiar tema">🌓 Tema</button>
+    </nav>
+  </header>
+
+  <div class="container hero">
+    <div class="card" id="contenido">
+      <h1 class="title">Arquitectura Cliente/Servidor, Diseño Centrado en el Usuario e Investigación Contextual para Requisitos</h1>
+      <p class="subtitle">Sitio educativo con redacción propia que explica tres pilares del desarrollo web: <strong>arquitectura cliente/servidor</strong>, <strong>diseño centrado en el usuario (DCU)</strong> e <strong>investigación en el entorno</strong> para un análisis de requisitos riguroso. Incluye referencias en formato <strong>APA 7.ª edición</strong> y buenas prácticas de accesibilidad.</p>
+      <div class="meta">
+        <span class="tag" title="Nivel">Nivel: Intermedio</span>
+        <span class="tag" title="Última actualización">Actualizado: 25/08/2025</span>
+        <span class="tag" title="Tecnologías">HTML · CSS · JavaScript</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <main>
+      <section id="cliente-servidor" aria-labelledby="cs-title">
+        <h2 id="cs-title">1) Arquitectura Cliente/Servidor en la programación web dinámica</h2>
+        <p>
+          La arquitectura <em>cliente/servidor</em> es el patrón estructural que permite que un <strong>cliente</strong> (por ejemplo, el navegador) solicite recursos y que un <strong>servidor</strong> procese la lógica de negocio, acceda a datos y devuelva respuestas. Este modelo viabiliza el <strong>contenido dinámico</strong>: formularios que envían datos, autenticación, paneles personalizados y APIs que entregan información en tiempo real. Gracias a la separación de responsabilidades, favorece la <strong>escalabilidad</strong>, la <strong>seguridad</strong> y el mantenimiento del sistema <a href="#ref-1" aria-label="Ir a referencia 1">[1]</a> <a href="#ref-2" aria-label="Ir a referencia 2">[2]</a>.
+        </p>
+        <div class="kpis" role="list" aria-label="Beneficios clave">
+          <div class="pill" role="listitem"><strong>Escalabilidad:</strong> permite distribuir carga y añadir instancias de servidor.</div>
+          <div class="pill" role="listitem"><strong>Seguridad:</strong> centraliza controles de acceso y resguarda datos sensibles.</div>
+          <div class="pill" role="listitem"><strong>Mantenibilidad:</strong> separa UI, lógica y datos para iterar con menor riesgo.</div>
+        </div>
+        <div class="accordion" aria-label="Conceptos relacionados">
+          <details>
+            <summary>Comunicación HTTP/HTTPS y APIs</summary>
+            <p>El cliente realiza <abbr title="HyperText Transfer Protocol">HTTP</abbr> o <abbr title="HyperText Transfer Protocol Secure">HTTPS</abbr> a rutas específicas (por ejemplo, <code>/api/usuarios</code>). El servidor interpreta la solicitud, ejecuta la lógica y responde con JSON/HTML. La seguridad de <code>HTTPS</code> protege la confidencialidad e integridad del intercambio.</p>
+          </details>
+          <details>
+            <summary>Sesiones, autenticación y estado</summary>
+            <p>Para funcionalidades personalizadas, el servidor gestiona <em>sesiones</em> o <em>tokens</em> que identifican al usuario. Esto habilita autorizaciones por rol y experiencias adaptadas, preservando la privacidad.</p>
+          </details>
+          <details>
+            <summary>Escalado horizontal y caché</summary>
+            <p>Balanceadores de carga, cachés (por ejemplo, reverse proxy) y colas de trabajo mejoran el rendimiento, manteniendo la coherencia entre múltiples instancias.</p>
+          </details>
+        </div>
+        <p class="callout">
+          <strong>Idea clave:</strong> el modelo cliente/servidor no es solo “petición–respuesta”; es una base organizativa que estructura responsabilidades, habilita el dinamismo y protege los datos del usuario.
+        </p>
+      </section>
+
+      <section id="dcu" aria-labelledby="dcu-title">
+        <h2 id="dcu-title">2) Diseño Centrado en el Usuario (DCU)</h2>
+        <p>
+          El <strong>DCU</strong> es una metodología que integra a las personas en todas las etapas: investigación, ideación, prototipado, desarrollo y evaluación. Su propósito es elevar la <strong>usabilidad</strong>, la <strong>accesibilidad</strong> y la <strong>satisfacción</strong>. Un enfoque centrado en el usuario reduce riesgos de rechazo, mejora el aprendizaje del sistema y fortalece la confianza. Esta orientación se alinea naturalmente con la arquitectura cliente/servidor al traducir hallazgos de uso en requisitos funcionales y no funcionales.
+        </p>
+        <h3>Buenas prácticas DCU</h3>
+        <ul>
+          <li>Definir <strong>personas</strong> y <strong>escenarios de uso</strong> representativos.</li>
+          <li>Prototipar <strong>rápido</strong> y recoger <strong>feedback</strong> temprano (baja y alta fidelidad).</li>
+          <li>Aplicar <strong>heurísticas de usabilidad</strong> y pruebas con usuarios.</li>
+          <li>Garantizar <strong>accesibilidad</strong> (teclado, contraste, etiquetas ARIA, textos alternativos).</li>
+          <li>Medir con <strong>métricas</strong> como tasa de éxito, tiempo en tarea y satisfacción.</li>
+        </ul>
+        <p class="callout success"><strong>Resultado esperado:</strong> una interfaz <em>optimizada y amigable</em> que reduce fricción cognitiva y mejora la eficiencia.</p>
+      </section>
+
+      <section id="investigacion" aria-labelledby="inv-title">
+        <h2 id="inv-title">3) Investigación en el entorno para el análisis de requisitos</h2>
+        <p>
+          La <strong>investigación contextual</strong> aporta evidencia para comprender necesidades reales, restricciones y oportunidades del entorno donde operará la aplicación. Este conocimiento nutre el <strong>análisis de requisitos</strong> y se traduce en especificaciones técnicas pertinentes: funcionalidades, reglas de negocio, criterios de desempeño y lineamientos de seguridad. Investigar en el territorio reduce la brecha entre lo que se desarrolla y lo que la gente realmente necesita, fortaleciendo la adopción y el impacto del producto.
+        </p>
+        <h3>Métodos recomendados</h3>
+        <ul>
+          <li>Entrevistas y grupos focales con usuarios y partes interesadas.</li>
+          <li>Observación contextual y recorridos de experiencia (<em>walkthroughs</em>).</li>
+          <li>Encuestas para validar hipótesis a mayor escala.</li>
+          <li>Análisis de procesos actuales y mapeo de pain points.</li>
+          <li>Co-creación de prototipos y validación iterativa.</li>
+        </ul>
+        <div class="callout">
+          <strong>Conexión con la arquitectura:</strong> los hallazgos de campo definen <em>qué</em> servicios debe exponer el servidor, <em>cómo</em> debe comportarse la interfaz y <em>qué</em> métricas asegurar (rendimiento, accesibilidad, seguridad).
+        </div>
+      </section>
+
+      <section id="referencias" aria-labelledby="ref-title">
+        <h2 id="ref-title">Referencias (APA 7.ª edición)</h2>
+        <ol class="ref-list">
+          <li id="ref-1" class="ref">
+            Blog Infranetworking. (2019, 15 de marzo). <em>Modelo cliente servidor</em>. Infranetworking. https://blog.infranetworking.com/modelo-cliente-servidor/
+          </li>
+          <li id="ref-2" class="ref">
+            Reactive Programming. (2021, 12 de enero). <em>La arquitectura Cliente-Servidor</em>. https://reactiveprogramming.io/blog/es/estilosarquitectonicos/cliente-servidor
+          </li>
+        </ol>
+        <p class="callout" role="note">
+          <strong>Nota:</strong> Puedes ampliar esta lista con “otras fuentes del RAC1” según tu curso. Asegúrate de citarlas en el texto (por ejemplo, <code>[3]</code>) y agregarlas aquí con formato APA 7.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <footer role="contentinfo">
+    Hecho con HTML, CSS y JavaScript · Accesible y responsive · © 2025
+  </footer>
+
+  <script>
+    // Toggle de tema claro/oscuro con preferencia persistente
+    (function(){
+      const STORAGE_KEY = 'site-theme';
+      const btn = document.getElementById('themeBtn');
+      const root = document.documentElement;
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if(saved === 'light'){ root.setAttribute('data-theme','light'); btn.setAttribute('aria-pressed','true'); }
+      btn.addEventListener('click', () => {
+        const isLight = root.getAttribute('data-theme') === 'light';
+        if(isLight){
+          root.removeAttribute('data-theme');
+          localStorage.removeItem(STORAGE_KEY);
+          btn.setAttribute('aria-pressed','false');
+        } else {
+          root.setAttribute('data-theme','light');
+          localStorage.setItem(STORAGE_KEY,'light');
+          btn.setAttribute('aria-pressed','true');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
